@@ -19,14 +19,19 @@ public class Partita {
 	private Giocatore giocatore;
 	private int cfu;
 	private Stanza stanzaCorrente;
+	private IO io;
 
-	public Partita(){
+
+	public Partita(IO io){
 		labirinto = new Labirinto();
 		labirinto.creaStanze();
 		this.finita = false;
 		this.stanzaCorrente = this.labirinto.getIngresso();
 		giocatore = new Giocatore();
+		cfu = getGiocatore().getCfu();
+		this.io  = io;
 	}
+
 
 	public Labirinto getLabirinto() {
 		return labirinto;
@@ -57,15 +62,15 @@ public class Partita {
 	 * Imposta la partita come finita
 	 *
 	 */
-	
+
 	public void setFinita() {
 		this.finita = true;
 	}
-	
+
 	public void setGiocatore(Giocatore giocatore) {
 		this.giocatore = giocatore;
 	}
-	
+
 	public Giocatore getGiocatore() {
 		return giocatore;
 	}
@@ -76,4 +81,13 @@ public class Partita {
 	public Stanza getStanzaCorrente() {
 		return this.stanzaCorrente;
 	}
+
+	public boolean giocatoreIsVivo() {
+		return (cfu >0);
+	}
+
+	public IO getIo() {
+		return io;
+	}
+
 }
