@@ -1,93 +1,92 @@
 package it.uniroma3.diadia;
 
 import it.uniroma3.diadia.ambienti.Labirinto;
-import it.uniroma3.diadia.ambienti.Stanza;
 import it.uniroma3.diadia.giocatore.Giocatore;
 
 /**
  * Questa classe modella una partita del gioco
  *
  * @author  docente di POO
- * @see Stanza
+ * @see Giocatore
  * @version base
  */
 
 public class Partita {
 
-	private Labirinto labirinto;
-	private boolean finita;
-	private Giocatore giocatore;
-	private int cfu;
-	private Stanza stanzaCorrente;
+	private Labirinto maze;
+	private Giocatore player;
 	private IO io;
-
-
+	private boolean partitaInCorso;
+/**
+ * Builder che costruisce all'interno dell'istanza un labirinto e un giocatore
+ */
 	public Partita(IO io){
-		labirinto = new Labirinto();
-		labirinto.creaStanze();
-		this.finita = false;
-		this.stanzaCorrente = this.labirinto.getIngresso();
-		giocatore = new Giocatore();
-		cfu = getGiocatore().getCfu();
-		this.io  = io;
+		this.maze=new Labirinto();
+		this.player= new Giocatore(maze.getStanzaIniziale());
+		this.io=io;
+		partitaInCorso=true;
+	}
+	/*
+	 * Builder sovraccarico che consente l'introduzione di un labirinto come parametro da passare
+	 * al costruttore. Questo previene la costruzione del labirinto di default ottenibile tramite
+	 * new Labirinto().
+	 */
+	
+	public Partita(IO io,Labirinto labirinto) {
+		this.maze = labirinto;
+		this.player = new Giocatore(maze.getStanzaIniziale());
+		this.io = io;
+		partitaInCorso=true;
+	}
+	
+/**
+ * Builder utilizzato per motivi di testing
+ * @param maze
+ * @param player
+ */
+	public Partita(Labirinto maze, Giocatore player) {
+		this.maze=maze;
+	}
+	/**
+	 * Metodo che imposta un nuovo labirinto in una istanza di partita
+	 * @param newMaze Variabile di tipo Labirinto
+	 */
+	public void setLabirinto(Labirinto newMaze) {
+		this.maze=newMaze;
 	}
 
-
+    /** 
+     * Metodo che ritorna un dato di tipo labirinto
+     */
 	public Labirinto getLabirinto() {
-		return labirinto;
+		return maze;
 	}
-
-	public void setLabirinto(Labirinto labirinto) {
-		this.labirinto = labirinto;
-	}
-
-
+	
 	/**
-	 * Restituisce vero se e solo se la partita e' stata vinta
-	 * @return vero se partita vinta
+	 * Metodo che imposta il giocatore creato in partita
+	 * @param newPlayer Variabile di tipo Giocatore. Questa variabile fa riferimento al nuovo giocatore da cambiare nell'istanza della partita 
 	 */
-	public boolean vinta() {
-		return this.getStanzaCorrente()== this.labirinto.getStanzaVincente();
+	
+	public void setGiocatore(Giocatore newPlayer) {
+		this.player=newPlayer;
 	}
-
 	/**
-	 * Restituisce vero se e solo se la partita e' finita
-	 * @return vero se partita finita
+	 * Metodo che ritorna il giocatore presente nell'istanza della partita
 	 */
-	public boolean isFinita() {
-		return finita || vinta() || (cfu == 0);
-	}
-
-	/**
-	 * Imposta la partita come finita
-	 *
-	 */
-
-	public void setFinita() {
-		this.finita = true;
-	}
-
-	public void setGiocatore(Giocatore giocatore) {
-		this.giocatore = giocatore;
-	}
-
 	public Giocatore getGiocatore() {
-		return giocatore;
+		return player;
 	}
-	public void setStanzaCorrente(Stanza stanzaCorrente) {
-		this.stanzaCorrente = stanzaCorrente;
-	}
-
-	public Stanza getStanzaCorrente() {
-		return this.stanzaCorrente;
-	}
-
-	public boolean giocatoreIsVivo() {
-		return (cfu >0);
-	}
-
-	public IO getIo() {
+	
+	public IO getIO() {
 		return io;
 	}
-
+	
+	
+	public void setStatoPartita(boolean stato) {
+		this.partitaInCorso=stato;
+	}
+	
+	public boolean getStatoPartita() {
+		return partitaInCorso;
+	}
 }

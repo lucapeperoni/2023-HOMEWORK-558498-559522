@@ -1,51 +1,55 @@
 package it.uniroma3.diadia.comandi;
 
+import it.uniroma3.diadia.IO;
 import it.uniroma3.diadia.Partita;
 import it.uniroma3.diadia.ambienti.Stanza;
-import it.uniroma3.diadia.IO;
-public class ComandoVai implements Comando {
-	private String direzione;
-	private IO io;
 
+public class ComandoVai implements Comando {
+	
+	private String direzione;
+	
 	public ComandoVai(String direzione) {
 		this.direzione = direzione;
 	}
-
-	/**
-	 * esecuzione del comando
-	 */
+	
+	@Override
+	public void setParametro(String param) {
+		this.direzione=param;
+	}
+	
 	@Override
 	public void esegui(Partita partita) {
-		this.io = partita.getIo();
-		Stanza stanzaCorrente = partita.getStanzaCorrente();
-		Stanza prossimaStanza = null;
+		IO io = partita.getIO();
+		Stanza corrente= partita.getGiocatore().getStanzaCorrente();
 		if(direzione==null) {
-			io.mostraMessaggio("Dove vuoi andare?  Devi specificare una direzione");
-			return;
+			io.mostraMessaggio("Dove vuoi andare?");
+			io.mostraMessaggio("Possibili direzioni: ");
+			io.mostraMessaggio(corrente.stampaDirezioni());
+		}else {
+			Stanza prossimaStanza = null;
+			prossimaStanza = corrente.getStanzaAdiacente(direzione);
+			if (prossimaStanza == null) {
+				io.mostraMessaggio("Direzione inesistente");
+				io.mostraMessaggio("Possibili direzioni: ");
+				io.mostraMessaggio(corrente.stampaDirezioni());
+			}else {
+				partita.getGiocatore().setStanzaCorrente(prossimaStanza);
+				int cfu = partita.getGiocatore().getCfu();
+				partita.getGiocatore().setCfu(--cfu);
+				//io.mostraMessaggio(cfu); Debugging purposes
+				io.mostraMessaggio(partita.getGiocatore().getStanzaCorrente().getDescrizione());
+			}
 		}
-		prossimaStanza = stanzaCorrente.getStanzaAdiacente(this.direzione);
-		if(prossimaStanza==null) {
-			io.mostraMessaggio("Direzione inesistente");
-			return;
-		}
-
-		partita.setStanzaCorrente(prossimaStanza);
-		io.mostraMessaggio(partita.getStanzaCorrente().getNome());
-		partita.getGiocatore().setCfu(partita.getGiocatore().getCfu()-1);
 	}
+	
 	@Override
-	public void setParametro(String parametro) {
-		this.direzione = parametro;
+	public String getNome() {
+		return "vai";
 	}
 
 	@Override
-	public void getParametro() {
-		
-	}
-
-	@Override
-	public void getNome() {
-		// TODO Auto-generated method stub
-		
+	public String getParametro() {
+		return direzione;
 	}
 }
+

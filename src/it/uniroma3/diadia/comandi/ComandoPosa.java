@@ -1,47 +1,52 @@
 package it.uniroma3.diadia.comandi;
 
-import it.uniroma3.diadia.attrezzi.Attrezzo;
-import it.uniroma3.diadia.IO;
 import it.uniroma3.diadia.Partita;
+import it.uniroma3.diadia.ambienti.Stanza;
+import it.uniroma3.diadia.giocatore.Borsa;
 
-public class ComandoPosa implements Comando {
-	private IO io;
+public class ComandoPosa implements Comando{
 	String nomeAttrezzo;
 	
-	public ComandoPosa(String nomeAttrezzo){
-		this.nomeAttrezzo = nomeAttrezzo;
-		
+	public ComandoPosa(String parametro) {
+		this.nomeAttrezzo=parametro;
 	}
 	
 	@Override
 	public void esegui(Partita partita) {
-		this.io = partita.getIo();
-		Attrezzo a = partita.getGiocatore().getBorsa().getAttrezzo(nomeAttrezzo);
-		if(a!=null) {
-			partita.getStanzaCorrente().addAttrezzo(a);
-			partita.getGiocatore().getBorsa().removeAttrezzo(nomeAttrezzo);
-			io.mostraMessaggio("Oggetto posato!");
+		if(nomeAttrezzo==null) {
+			partita.getIO().mostraMessaggio("Inserisci il nome dell'attrezzo da lasciare.");
+		}else{
+			Stanza stanzaCorrente=partita.getGiocatore().getStanzaCorrente();
+			Borsa borsaGiocatore=partita.getGiocatore().getBorsa();
+			if(borsaGiocatore.hasAttrezzo(nomeAttrezzo)) {
+				if(stanzaCorrente.addAttrezzo(borsaGiocatore.getAttrezzo(nomeAttrezzo))){
+					borsaGiocatore.removeAttrezzo(nomeAttrezzo);
+					partita.getIO().mostraMessaggio("L'attrezzo è stato posato nella stanza");
+				}else{
+					partita.getIO().mostraMessaggio("L'attrezzo non può essere posato in questa stanza perché è già piena di altri attrezzi.");
+					partita.getIO().mostraMessaggio("Posa l'attrezzo in un'altra stanza!");
+				}
+			}else{
+				partita.getIO().mostraMessaggio("Questo oggetto non è presente nella borsa");
+			}
 		}
-		else {
-			io.mostraMessaggio("L' oggetto non puoi posarlo perche non lo hai nella borsa!");
-		}
-	}
-
-	@Override
-	public void setParametro(String parametro) {
-		this.nomeAttrezzo = parametro;
 		
 	}
 
 	@Override
-	public void getParametro() {
+	public void setParametro(String param) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void getNome() {
-		// TODO Auto-generated method stub
-		
+	public String getNome() {
+		return "posa";
 	}
+
+	@Override
+	public String getParametro() {
+		return nomeAttrezzo;
+	}
+
 }

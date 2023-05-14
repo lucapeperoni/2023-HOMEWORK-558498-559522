@@ -1,46 +1,34 @@
 package it.uniroma3.diadia.comandi;
 
-import it.uniroma3.diadia.IO;
 import it.uniroma3.diadia.Partita;
-public class ComandoAiuto implements Comando {
-	static final private String[] elencoComandi = {"vai", "aiuto", "fine"};
-	static final private String[] elencoDirezioni = {"nord", "sud", "ovest", "est"};
-	static final private String[] prendiAttrezzo = {"prendi <nomeAttrezzo>"};
-	static final private String[] posaAttrezzo = {"posa <nomeAttrezzo>"};
-	private IO io; 
+
+public class ComandoAiuto implements Comando{
+	private String[] elencoComandi;
 	
-	/**
-	 * Stampa informazioni di aiuto.
-	 */
+	public ComandoAiuto(String[] elencoComandi) {
+		this.elencoComandi=elencoComandi;
+	}
 	
 	@Override
 	public void esegui(Partita partita) {
-		this.io = partita.getIo();
+		partita.getIO().mostraMessaggio("Comandi disponibili: ");
 		for(int i=0; i< elencoComandi.length; i++) 
-			io.mostraMessaggio(elencoComandi[i]+" ");
-		io.mostraMessaggio("");
-		for(int i=0; i< elencoDirezioni.length; i++) 
-			io.mostraMessaggio(elencoDirezioni[i]+" ");
-		io.mostraMessaggio("");		
-		for(int i=0; i< prendiAttrezzo.length; i++) 
-			io.mostraMessaggio(prendiAttrezzo[i]+" ");
-		io.mostraMessaggio("");
-		for(int i=0; i< posaAttrezzo.length; i++) 
-			io.mostraMessaggio(posaAttrezzo[i]+" ");
-		io.mostraMessaggio("");
-	}
-
-	@Override
-	public void setParametro(String parametro) {
+			System.out.print(elencoComandi[i]+" ");
+		partita.getIO().mostraMessaggio("");
 		
 	}
 
 	@Override
-	public void getParametro() {
-
+	public void setParametro(String param) {
 	}
 
 	@Override
-	public void getNome() {
+	public String getNome() {
+		return "aiuto";
+	}
+
+	@Override
+	public String getParametro() {
+		return null;
 	}
 }

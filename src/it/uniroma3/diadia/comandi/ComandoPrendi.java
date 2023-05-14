@@ -1,45 +1,51 @@
 package it.uniroma3.diadia.comandi;
 
-import it.uniroma3.diadia.attrezzi.Attrezzo;
 import it.uniroma3.diadia.IO;
 import it.uniroma3.diadia.Partita;
+import it.uniroma3.diadia.ambienti.Stanza;
+import it.uniroma3.diadia.giocatore.Borsa;
 
 public class ComandoPrendi implements Comando {
-	private IO io;
 	private String nomeAttrezzo;
-	
+
 	public ComandoPrendi(String nomeAttrezzo) {
 		this.nomeAttrezzo = nomeAttrezzo;
 	}
 
-	@Override
 	public void esegui(Partita partita) {
-		this.io = partita.getIo();
-		Attrezzo a = partita.getStanzaCorrente().getAttrezzo(nomeAttrezzo);
-		if(a != null) {
-			partita.getGiocatore().getBorsa().addAttrezzo(a);
-			partita.getStanzaCorrente().removeAttrezzo(a);
-			io.mostraMessaggio("Oggetto preso!");
+		IO io = partita.getIO();
+
+		if(this.nomeAttrezzo==null) {
+			io.mostraMessaggio("Digitare il nome dell'attrezzo che vuoi prendere");
+			return;
+		}else{
+			Stanza stanzaCorrente=partita.getGiocatore().getStanzaCorrente();
+			Borsa borsaGiocatore=partita.getGiocatore().getBorsa();
+			if(stanzaCorrente.hasAttrezzo(this.nomeAttrezzo)) {
+				if(borsaGiocatore.addAttrezzo(stanzaCorrente.getAttrezzo(this.nomeAttrezzo))){
+					io.mostraMessaggio("Hai preso "+this.nomeAttrezzo);
+					stanzaCorrente.removeAttrezzo(this.nomeAttrezzo);
+				}else{
+					io.mostraMessaggio("L'operazione non ha avuto successo. La borsa è piena");
+				}
+			}else{
+				io.mostraMessaggio("L'attrezzo non è presente nella stanza corrente");
+			}
 		}
-		else {
-			io.mostraMessaggio("L'oggetto selezionato non si trova in questa stanza!");
-		}
 	}
 
 	@Override
-	public void setParametro(String parametro) {
-		this.nomeAttrezzo = parametro;
-	}
-
-	@Override
-	public void getParametro() {
+	public void setParametro(String param) {
 		// TODO Auto-generated method stub
-		
+	}
+	
+	@Override
+	public String getNome() {
+		return "prendi";
 	}
 
 	@Override
-	public void getNome() {
-		// TODO Auto-generated method stub
-		
+	public String getParametro() {
+		return nomeAttrezzo;
 	}
 }
