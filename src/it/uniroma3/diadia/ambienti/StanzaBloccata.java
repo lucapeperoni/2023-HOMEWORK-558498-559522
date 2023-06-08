@@ -1,78 +1,82 @@
 package it.uniroma3.diadia.ambienti;
 
+import java.util.Map;
+import java.util.Set;
+
+import it.uniroma3.diadia.attrezzi.Attrezzo;
+
 public class StanzaBloccata extends Stanza{
-	private String direzioneBloccata;
-	private String nomePassepartout;
-	static final String NOME_PASSEPARTOUT_DEFAULT = "passepartout";
 	
-	/*
-	 * Builder che costruisce una stanza bloccata. Non viene specificato il nome dell'attrezzo
-	 * capace di sbloccare l'uscita. Si utilizza il nome di default "passepartout".
-	 * @param nome della stanza
-	 * @param direzione bloccata della stanza
-	 */
-	
-	public StanzaBloccata(String nome,String direzioneBloccata) {
-		this(nome, direzioneBloccata, NOME_PASSEPARTOUT_DEFAULT);
-	}
-	
-	/*
-	 * Costruttore di stanza bloccata. Costruisce una stanza che ha una direzione specificata bloccata e 
-	 * il nome dell'attrezzo capace di sbloccarla.
-	 * @param nome della stanza bloccata
-	 * @param direzione bloccata della stanza
-	 * @param nome dell'attrezzo capace di sbloccare la direzione bloccata
-	 */
-	
-	public StanzaBloccata(String nome, String direzioneBloccata, String passepartout ){
+	private String attrezzoMagico;
+	private Direzione direzioneBloccata;
+
+	public StanzaBloccata(String nome, String attrezzo, Direzione direzione) {
 		super(nome);
-		this.direzioneBloccata=direzioneBloccata;
-		this.nomePassepartout=passepartout;
+		this.attrezzoMagico = attrezzo;
+		this.direzioneBloccata = direzione;
 	}
-
-	public void setDirezioneBloccata(String direzioneBloccata) {
-		this.direzioneBloccata=direzioneBloccata;
-	}
-
-	public String getDirezioneBloccata() {
-		return direzioneBloccata;
-	}
-
-	public void setPasspartout(String nomeAttrezzo) {
-		this.nomePassepartout=nomeAttrezzo;
-	}
-
-	public String getNomePasspartout() {
-		return nomePassepartout;
-	}
-
-	// Non sarebbe più opportuno modificare toString?
+	
 	@Override
-	public String getDescrizione() {
+	public Stanza getStanzaAdiacente(Direzione direzione) {
+        Stanza prossimaStanza = null;
+        Set<Direzione> direzioni = this.getDirezioni();
+        Map<Direzione, Stanza> stanze = this.getStanzeAdiacenti();
+ 
+        if(!direzione.equals(direzioneBloccata) || (this.hasAttrezzo(attrezzoMagico))){
+        	for(Direzione d : direzioni) {
+        		if (d.equals(direzione)) {
+        			prossimaStanza = stanze.get(direzione);
+        		}
+        	}
+        }
+        else {
+        	if(direzione.equals(direzioneBloccata)&&(!this.hasAttrezzo(attrezzoMagico))){
+        		prossimaStanza = this;
+        	}
+        }
+        
+        return prossimaStanza;
+	}
+	
+	@Override
+	 public String getDescrizione() {
+       return this.toString();
+   }
+	
+	@Override
+	public String toString() {
+		Map<String, Attrezzo> attrezzi = this.getAttrezzi();
 		StringBuilder risultato = new StringBuilder();
-		risultato.append("Questa stanza ha la direzione "+direzioneBloccata+" bloccata.\n");
-		risultato.append("Per passare devi posare l'oggetto chiave chiamato: "+nomePassepartout+".\n");
-		return risultato.append(super.toString()).toString();
+		if(!hasAttrezzo(attrezzoMagico)) {
+			risultato.append("Una delle uscite Ã¨ bloccata, ti serve la chiave!!\n");
+			risultato.append(this.getNome());
+			risultato.append("\nUscite: ");
+			for (Direzione direzione : this.getDirezioni())
+				if (direzione!=null)
+					risultato.append(" " + direzione.getNome());
+			risultato.append("\nAttrezzi nella stanza: ");
+			risultato.append(attrezzi.keySet()+" ");
+			if(this.getPersonaggio()!=null) {
+				risultato.append("\nPersonaggi nella stanza: ");
+				risultato.append(this.getPersonaggio().getNome());
+			}
+		}
+		else {
+			risultato.append(this.getNome());
+			risultato.append("\nUscite: ");
+			for (Direzione direzione : this.getDirezioni())
+				if (direzione!=null)
+					risultato.append(" " + direzione.getNome());
+			risultato.append("\nAttrezzi nella stanza: ");
+			risultato.append(attrezzi.keySet()+" ");
+			if(this.getPersonaggio()!=null) {
+				risultato.append("\nPersonaggi nella stanza: ");
+				risultato.append(this.getPersonaggio().getNome());
+			}
+		}
+		return risultato.toString();
 	}
 
-//	@Override
-//	public String toString() {
-//		StringBuilder risultato = new StringBuilder();
-//		risultato.append("Questa stanza ha la direzione "+direzioneBloccata+" bloccata.\n");
-//		risultato.append("Per passare devi posare l'oggetto chiave chiamato: "+nomePassepartout+".\n");
-//		risultato.append(super.toString());
-//		return risultato.toString();
-//	}
 
-	@Override
-	public Stanza getStanzaAdiacente(String dir) {
-		Stanza stanzaAdiacente = super.getStanzaAdiacente(dir);
-		if(this.direzioneBloccata.equals(dir) && stanzaAdiacente!=null && this.hasAttrezzo(nomePassepartout))
-			return stanzaAdiacente;
-
-		if(!this.direzioneBloccata.equals(dir) && stanzaAdiacente!=null)
-			return stanzaAdiacente;
-		
-		return this;
-	}
 }
+

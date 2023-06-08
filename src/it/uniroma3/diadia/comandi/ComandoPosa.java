@@ -1,52 +1,45 @@
 package it.uniroma3.diadia.comandi;
 
+import it.uniroma3.diadia.IO;
 import it.uniroma3.diadia.Partita;
 import it.uniroma3.diadia.ambienti.Stanza;
+import it.uniroma3.diadia.attrezzi.Attrezzo;
 import it.uniroma3.diadia.giocatore.Borsa;
 
-public class ComandoPosa implements Comando{
-	String nomeAttrezzo;
+public class ComandoPosa extends AbstractComando implements Comando {
 	
-	public ComandoPosa(String parametro) {
-		this.nomeAttrezzo=parametro;
-	}
+
+	public ComandoPosa() {}
 	
+
 	@Override
 	public void esegui(Partita partita) {
-		if(nomeAttrezzo==null) {
-			partita.getIO().mostraMessaggio("Inserisci il nome dell'attrezzo da lasciare.");
-		}else{
-			Stanza stanzaCorrente=partita.getGiocatore().getStanzaCorrente();
-			Borsa borsaGiocatore=partita.getGiocatore().getBorsa();
-			if(borsaGiocatore.hasAttrezzo(nomeAttrezzo)) {
-				if(stanzaCorrente.addAttrezzo(borsaGiocatore.getAttrezzo(nomeAttrezzo))){
-					borsaGiocatore.removeAttrezzo(nomeAttrezzo);
-					partita.getIO().mostraMessaggio("L'attrezzo è stato posato nella stanza");
-				}else{
-					partita.getIO().mostraMessaggio("L'attrezzo non può essere posato in questa stanza perché è già piena di altri attrezzi.");
-					partita.getIO().mostraMessaggio("Posa l'attrezzo in un'altra stanza!");
+		IO io = partita.getConsole();
+		if (this.getParametro()==null) {
+			io.mostraMessaggio("Che oggetto vuoi posare nella stanza?");
+		}
+		else {
+			//variabili di appoggio
+			Attrezzo a = partita.getGiocatore().getBorsa().getAttrezzo(this.getParametro()); 
+			final Stanza s = partita.getStanzaCorrente();
+			final Borsa b = partita.getGiocatore().getBorsa();
+			if(b.hasAttrezzo(this.getParametro())) { //se ho l'attrezzo in borsa
+				a = b.removeAttrezzo(this.getParametro()); //lo rimuovo e lo salvo nella variabile di appoggio 'a'
+				if(s.addAttrezzo(a)) { //aggiungo 'a' alla stanza corrente
+					io.mostraMessaggio("Hai posato '"+ this.getParametro() + "' nella stanza");
 				}
-			}else{
-				partita.getIO().mostraMessaggio("Questo oggetto non è presente nella borsa");
+				else { //se la stanza Ã¨ giÃ  piena
+					io.mostraMessaggio("Non Ã¨ possibile posare questo oggetto qui!");
+					b.addAttrezzo(a);
+				}
+			}
+			else { //se non ho l'oggetto in borsa
+				io.mostraMessaggio("Non hai questo attrezzo nello zaino!");
 			}
 		}
-		
 	}
+	
 
-	@Override
-	public void setParametro(String param) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public String getNome() {
-		return "posa";
-	}
-
-	@Override
-	public String getParametro() {
-		return nomeAttrezzo;
-	}
 
 }
+

@@ -2,9 +2,10 @@ package it.uniroma3.diadia.comandi;
 
 import java.util.Scanner;
 
-public class FabbricaDiComandiFisarmonica implements FabbricaDiComandi{
-	private String nomeComando;
-	private String parametro;
+public class FabbricaDiComandiFisarmonica implements FabbricaDiComandi {
+	
+	
+	public FabbricaDiComandiFisarmonica() {}
 	
 	@Override
 	public Comando costruisciComando(String istruzione) {
@@ -16,33 +17,33 @@ public class FabbricaDiComandiFisarmonica implements FabbricaDiComandi{
 			nomeComando = scannerDiParole.next(); // prima parola: nome del comando
 		if (scannerDiParole.hasNext())
 			parametro = scannerDiParole.next(); // seconda parola: eventuale parametro
+		
 		if (nomeComando == null)
 			comando = new ComandoNonValido();
 		else if (nomeComando.equals("vai"))
-			comando = new ComandoVai(parametro);
+			comando = new ComandoVai();
 		else if (nomeComando.equals("prendi"))
-			comando = new ComandoPrendi(parametro);
+			comando = new ComandoPrendi();
 		else if (nomeComando.equals("posa"))
-			comando = new ComandoPosa(parametro);
+			comando = new ComandoPosa();
 		else if (nomeComando.equals("aiuto"))
 			comando = new ComandoAiuto();
 		else if (nomeComando.equals("fine"))
 			comando = new ComandoFine();
 		else if (nomeComando.equals("guarda"))
 			comando = new ComandoGuarda();
+		else if (nomeComando.equals("interagisci"))
+			comando = new ComandoInteragisci();
+		else if (nomeComando.equals("saluta"))
+			comando = new ComandoSaluta();
+		else if (nomeComando.equals("regala"))
+			comando = new ComandoRegala();
+		else if (nomeComando.equals("info"))
+			comando = new ComandoInfo();
 		else comando = new ComandoNonValido();
 		comando.setParametro(parametro);
-		this.nomeComando = nomeComando;
-		this.parametro = parametro;
 		return comando;
 	}
-
-	public String getNome() {
-		return this.nomeComando;
-	}
-
-	public String getParametro() {
-		return parametro;
-	}
-	
 }
+	
+

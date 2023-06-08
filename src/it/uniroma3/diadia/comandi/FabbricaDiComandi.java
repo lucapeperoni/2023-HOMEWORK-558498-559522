@@ -1,5 +1,9 @@
 package it.uniroma3.diadia.comandi;
 
 public interface FabbricaDiComandi {
-	public Comando costruisci(String comandoConParametro);
+	
+	public Comando costruisciComando(String istruzione);
+
+	
+		
 }
